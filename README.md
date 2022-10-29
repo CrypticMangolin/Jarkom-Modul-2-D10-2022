@@ -300,7 +300,7 @@ www     IN      CNAME   operation.wise.d10.com.
 ## Hasil ping subdomain
 <img width="465" alt="image" src="https://user-images.githubusercontent.com/80145586/198836648-8703df6f-f093-4684-9162-d438cbb6685c.png">
 
-#Nomor 7
+# Nomor 7
 Membuat subdomain melalui Berlint dengan akses strix.operation.wise.yyy.com dengan alias www.strix.operation.wise.yyy.com yang mengarah ke Eden
 
 ## Pada node Berlint
@@ -336,20 +336,22 @@ cp /root/config7.txt /etc/bind/operation/operation.wise.d10.com
 service bind9 restart
 ```
 ## Hasil testing
-Hasil `ping strix.operation.wise.d10.com -c 5`<img width="468" alt="image" src="https://user-images.githubusercontent.com/80145586/198836666-d5a1b287-cb64-4720-aa47-a3844795ef0a.png"> pada client
-<img width="457" alt="image" src="https://user-images.githubusercontent.com/80145586/198836656-b8734cc9-d729-450a-9966-07499b045db2.png">
+Hasil `ping strix.operation.wise.d10.com -c 5`pada client
+
+<img width="468" alt="image" src="https://user-images.githubusercontent.com/80145586/198836666-d5a1b287-cb64-4720-aa47-a3844795ef0a.png"> 
 
 Hasil `ping www.strix.operation.wise.d10.com -c 5` pada client
-<img width="457" alt="image" src="https://user-images.githubusercontent.com/80145586/198836689-fbecc053-f1d9-4ab7-8236-3fc221679b3b.png">
+
+<img width="457" alt="image" src="https://user-images.githubusercontent.com/80145586/198836656-b8734cc9-d729-450a-9966-07499b045db2.png">
 
 ## Kendala/error
 Pada saat demo terjadi error ip address tidak mengarah ke ip Eden, karena lupa me-run file `no2.sh` pada node client sehingga client belum tersambung ke IP WISE, Berlint, dan Eden
 
-#Nomor 8
+# Nomor 8
 Setelah melakukan konfigurasi server, maka dilakukan konfigurasi Webserver. Pertama dengan webserver www.wise.yyy.com. Pertama, Loid membutuhkan webserver dengan DocumentRoot pada /var/www/wise.yyy.com
 
 ## Pada node WISE
-###Isi file konfigurasi `no8.sh`
+### Isi file konfigurasi `no8.sh`
 ```
 apt-get update
 apt-get install lynx
@@ -407,10 +409,209 @@ service apache2 restart
 ```
 ## Hasil testing
 Hasil command `lynx wise.d10.com` pada client
+
 <img width="466" alt="image" src="https://user-images.githubusercontent.com/80145586/198836694-5efc0aa9-234b-4344-aded-a3b7b6afea9b.png">
 
 Hasil command `lynx www.wise.d10.com` pada client
-![Uploading image.png…]()
+
+<img width="461" alt="image" src="https://user-images.githubusercontent.com/80145586/198836771-ce19b4b3-8feb-4ea2-b82c-0246b951fdff.png">
 
 ## Kendala/error
 Pada saat demo terjadi error karena lupa me-run file `no2.sh` pada node client sehingga client belum tersambung ke IP WISE, Berlint, dan Eden
+
+# Nomor 9
+Setelah itu, Loid juga membutuhkan agar url www.wise.yyy.com/index.php/home dapat menjadi menjadi www.wise.yyy.com/home
+## Pada node WISE
+### Isi file konfigurasi `no9.sh
+```
+a2enmod rewrite
+
+service apache2 restart
+
+cp /root/config9.txt /var/www/wise.d10.com/.htaccess
+
+# Isi file /root/config9.txt untuk file /var/www/wise.d10.com/.htaccess
+
+# -------------------------------------------------
+
+# RewriteEngine On
+# RewriteCond %{REQUEST_FILENAME} !-d
+# RewriteRule ^([^\.]+)$ $1.php [NC,L]
+
+# -------------------------------------------------
+
+cp /root/config91.txt /var/www/wise.d10.com/home.php
+
+# Isi file /root/config91.txt untuk file /var/www/wise.d10.com/home.php
+
+# -------------------------------------------------
+
+# <?php
+#        echo `Ini adalah halaman home`;
+# ?>
+
+# -------------------------------------------------
+
+# NB : Tanda ` adalah petik dua (")
+
+cp /root/config92.txt /etc/apache2/sites-available/wise.d10.com.conf
+
+# Isi file /root/config92.txt untuk file /etc/apache2/sites-available/wise.d10.com.conf
+
+# -------------------------------------------------
+
+#<VirtualHost *:80>
+#        ServerAdmin webmaster@localhost
+#        DocumentRoot /var/www/wise.d10.com
+#        ServerName wise.d10.com
+#        ServerAlias www.wise.d10.com
+
+#         <Directory /var/www/wise.d10.com>
+#               Options +FollowSymLinks -Multiviews
+#               AllowOverride All
+#         </Directory>
+
+#        ErrorLog ${APACHE_LOG_DIR}/error.log
+#        CustomLog ${APACHE_LOG_DIR}/access.log combined
+#</VirtualHost>
+
+## vim: syntax=apache ts=4 sw=4 sts=4 sr noet
+
+# -------------------------------------------------
+
+# NB : Tanda ` adalah petik dua (")
+
+service apache2 restart
+```
+
+## Hasil testing
+Hasil command `lynx www.wise.d10.com/home` pada client
+
+<img width="461" alt="image" src="https://user-images.githubusercontent.com/80145586/198837364-6a813faf-a9b0-4251-85e8-d7c93dee0ab4.png">
+
+## Kendala/error
+Karena keterbatasan waktu sehingga belum sempat selesai pada sesi praktikum
+
+# Nomor 10
+Setelah itu, pada subdomain `www.eden.wise.yyy.com`, Loid membutuhkan penyimpanan aset yang memiliki DocumentRoot pada `/var/www/eden.wise.yyy.com`
+
+## Pada node Eden
+### isi file konfigurasi `no10.sh`
+```
+apt-get update
+apt-get install lynx
+
+apt-get install apache2
+service apache2 start
+
+apt-get install php
+
+apt-get install libapache2-mod-php7.0
+
+service apache2 restart
+
+cp /etc/apache2/sites-available/000-default.conf /etc/apache2/sites-available/eden.wise.d10.com.conf
+
+mkdir /var/www/eden.wise.d10.com
+
+cp config10.txt /etc/apache2/sites-available/eden.wise.d10.com.conf
+
+# Isi file /root/config10.txt untuk file /etc/apache2/sites-available/eden.wise.d10.com.conf
+
+# -------------------------------------------------
+
+#<VirtualHost *:80>
+#        ServerAdmin webmaster@localhost
+#        DocumentRoot /var/www/eden.wise.d10.com
+#        ServerName eden.wise.d10.com
+#        ServerAlias www.eden.wise.d10.com
+
+#         <Directory /var/www/wise.d10.com>
+#               Options +FollowSymLinks -Multiviews
+#               AllowOverride All
+#         </Directory>
+
+#        ErrorLog ${APACHE_LOG_DIR}/error.log
+#        CustomLog ${APACHE_LOG_DIR}/access.log combined
+#</VirtualHost>
+
+## vim: syntax=apache ts=4 sw=4 sts=4 sr noet
+
+# -------------------------------------------------
+
+# NB : Tanda ` adalah petik dua (")
+
+a2ensite eden.wise.d10.com
+
+service apache2 restart
+
+cp /root/config101.txt /var/www/eden.wise.d10.com/index.php
+
+# Isi file /root/config101.txt untuk file /var/www/eden.wise.d10.com/index.php
+
+# -------------------------------------------------
+
+#<?php
+#        phpinfo();
+#?>
+
+# -------------------------------------------------
+
+service apache2 restart
+```
+## Hasil testing
+Hasil command `lynx www.eden.wise.d10.com` pada client
+
+<img width="468" alt="image" src="https://user-images.githubusercontent.com/80145586/198837983-eece9a0d-4a23-4c40-81fa-c8f507f5ab50.png">
+
+
+# Nomor 11
+Akan tetapi, pada folder /public, Loid ingin hanya dapat melakukan directory listing saja
+
+Menambahkan setting pada directory `/public` dalam file `/etc/apache2/sites-available/eden.wise.d10.com.conf`
+### Isi file konfigurasi `no11.sh`
+```
+mkdir /var/www/eden.wise.d10.com/public
+
+cp config11.txt /etc/apache2/sites-available/eden.wise.d10.com.conf
+
+# Isi file /root/config11.txt untuk file /etc/apache2/sites-available/eden.wise.d10.com.conf
+
+# -------------------------------------------------
+
+#<VirtualHost *:80>
+#        ServerAdmin webmaster@localhost
+#        DocumentRoot /var/www/eden.wise.d10.com
+#        ServerName eden.wise.d10.com
+#        ServerAlias www.eden.wise.d10.com
+
+#         <Directory /var/www/wise.d10.com>
+#               Options +FollowSymLinks -Multiviews
+#               AllowOverride All
+#         </Directory>
+
+#         <Directory /var/www/eden.wise.d10.com/public>
+#             Options +Indexes
+#         </Directory>
+
+#        ErrorLog ${APACHE_LOG_DIR}/error.log
+#        CustomLog ${APACHE_LOG_DIR}/access.log combined
+#</VirtualHost>
+
+## vim: syntax=apache ts=4 sw=4 sts=4 sr noet
+
+# -------------------------------------------------
+
+# NB : Tanda ` adalah petik dua (")
+
+service apache2 restart
+```
+
+## Hasil testing
+Hasil `lynx www.eden.wise.d10.com/public` pada client
+
+<img width="457" alt="image" src="https://user-images.githubusercontent.com/80145586/198838056-4b4bf785-db06-47db-bdcc-39bb690dcefc.png">
+
+## Kendala/error
+Karena keterbatasan waktu sehingga belum sempat selesai pada sesi praktikum
+
